@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="ru">
+<head><base href="/dist/">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#ffffff">
+  <meta name="description" content="Nike Liquid Lab — интерактивный дизайн-концепт. Проведи курсором и открой новую сторону Air Max 90.">
+  <title>NIKE — Liquid Lab</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23ceff00'/%3E%3Ctext x='12' y='47' font-size='44' font-weight='900' font-style='italic' font-family='Arial'%3EN%3C/text%3E%3C/svg%3E">
+  <link rel="preload" as="image" href="assets/air-max.png">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<a class="skip-link" href="#silhouette">Перейти к описанию</a>
+<main>
+<section class="hero" id="lab" aria-label="Nike Liquid Lab — интерактивная лаборатория материалов">
+  <div class="fallback-art" aria-hidden="true"><img class="fallback-word" src="assets/wordmark.png" alt=""></div>
+  <canvas id="fluid-canvas" aria-label="Логотип Nike. Двигайте указателем без нажатия: жидкость раскрывает другой материал и фон."></canvas>
+  <div class="liquid-surface" aria-hidden="true"></div>
+  <header class="header">
+    <a href="#lab" class="brand" aria-label="Nike Liquid Lab — главная">
+      <svg class="swoosh" viewBox="0 0 100 36" aria-hidden="true"><path d="M99 1 29 31C10 39-5 29 3 14L13 1C8 13 9 22 22 21Z" fill="currentColor"/></svg>
+      <span class="brand-line"></span><span class="brand-caption">LIQUID<br>LAB.</span>
+    </a>
+    <nav aria-label="Основная навигация"><a href="#lab" class="nav-active">Лаборатория</a><a href="#silhouette">Силуэт</a><button type="button" data-open-about>О проекте <span>↗</span></button></nav>
+    <span class="edition mono">DESIGN EXPERIMENT · 001</span>
+  </header>
+  <div class="hero-instruction"><svg viewBox="0 0 40 40" aria-hidden="true"><path d="m12 7 4 24 5-8 9-2Z"/><path d="M5 14c-4 12 7 24 19 20M24 5c7 2 11 7 12 13"/></svg><p id="interaction-hint">Двигай курсором без нажатия.<br><span>Почувствуй течение.</span></p></div>
+  <div class="vertical-note mono">AIR MAX 90 / REIMAGINED</div>
+  <div class="art-caption mono"><span>FIG. 01</span><span>СИЛУЭТ ЗНАКОМЫЙ.<br>ОЩУЩЕНИЕ — НОВОЕ.</span></div>
+  <div class="hero-bottom">
+    <div class="hero-copy"><h1>Привычная форма.<br>Новые правила.</h1><p class="description">Движение меняет всё. Даже то,<br>что казалось неизменным.</p></div>
+    <div class="material-area">
+      <div class="material-topline mono"><span>ВЫБЕРИ МАТЕРИАЛ</span><span id="material-counter">01 / 03</span></div>
+      <div class="material-dock" role="group" aria-label="Материал проявления">
+        <button class="material-button active" data-material="0" aria-pressed="true"><span class="swatch chrome"></span><span>Хром</span></button>
+        <button class="material-button" data-material="1" aria-pressed="false"><span class="swatch bubble"></span><span>Пузыри</span></button>
+        <button class="material-button" data-material="2" aria-pressed="false"><span class="swatch foam"></span><span>Пена</span></button>
+        <span class="dock-separator"></span>
+        <button id="auto-button" class="auto-button" aria-pressed="false" title="Автоматически менять материал"><span class="play-icon">▶</span><span>Авто</span></button>
+      </div>
+      <div class="material-foot"><button id="preview-button" aria-pressed="false">Показать слой</button><button id="motion-button" aria-pressed="true">Движение: вкл.</button><span id="material-label">01 — LIQUID CHROME</span><button id="reset-button" title="Очистить жидкий след">↺ <span>Сбросить</span></button></div>
+    </div>
+    <a href="#silhouette" class="explore-button"><span>Ближе к деталям</span><span class="arrow-circle">↙</span></a>
+  </div>
+  <div class="hero-baseline mono"><span>NIKE / MATERIAL STUDIES</span><span class="scroll-note">ЛИСТАЙ ДАЛЬШЕ <span>↓</span></span><span>CONCEPT, NOT COMMERCE.</span></div>
+  <div class="load-note mono" id="load-note" role="status">ГОТОВИМ ЭКСПЕРИМЕНТ<span>...</span></div>
+</section>
+<section id="silhouette" class="silhouette-section">
+  <div class="section-top"><span class="mono">02 / THE ORIGINAL</span><span class="mono">ФОРМА, КОТОРАЯ ОСТАЁТСЯ.</span></div>
+  <div class="story-grid">
+    <div class="story-heading"><span class="small-tag">NIKE AIR MAX 90</span><h2>Икона.<br>В новой<br> <em>среде.</em></h2><p>Узнаваемые линии. Многослойная фактура. Видимая Air-амортизация. Здесь классический силуэт становится пространством для эксперимента.</p><a class="text-link" href="https://www.nike.com/de/t/air-max-90-schuh-exykZV6r/IX0354-100" target="_blank" rel="noopener noreferrer">Оригинальная модель на Nike.com <span>↗</span></a></div>
+    <div class="product-study"><span class="mono study-top">AIR MAX 90 <span>PROFILE / 01</span></span><img src="assets/air-max-side.png" alt="Nike Air Max 90: белый многослойный верх, голубые вставки и видимая Air-подушка" loading="lazy"><div class="study-bottom"><span class="mono">WHITE / LIGHT SMOKE GREY</span><span class="plus-mark">+</span></div></div>
+  </div>
+  <div class="material-story"><div><span class="mono">03 / MATERIAL PLAY</span><h3>Один силуэт.<br>Три состояния.</h3></div><div class="material-description"><p>Зеркальный металл, прозрачные пузырьки или мягкая розовая пена. Это цифровые интерпретации — новые поверхности знакомой формы.</p><button id="return-lab" class="text-link">Вернуться в лабораторию <span>↑</span></button></div></div>
+  <div class="material-cards">
+    <button class="material-card card-chrome" data-preview-material="0"><div class="card-head"><span class="mono">01 / LIQUID CHROME</span><span>↗</span></div><div class="material-orb chrome-orb"></div><div class="card-foot"><h4>Отражай.</h4><p>Холодный блеск.<br>Живое движение.</p></div></button>
+    <button class="material-card card-bubble" data-preview-material="1"><div class="card-head"><span class="mono">02 / BUBBLE WRAP</span><span>↗</span></div><div class="material-orb bubble-orb"></div><div class="card-foot"><h4>Выделяйся.</h4><p>Прозрачная фактура.<br>Неожиданный объём.</p></div></button>
+    <button class="material-card card-foam" data-preview-material="2"><div class="card-head"><span class="mono">03 / PINK FOAM</span><span>↗</span></div><div class="material-orb foam-orb"></div><div class="card-foot"><h4>Чувствуй.</h4><p>Мягкая поверхность.<br>Смелый характер.</p></div></button>
+  </div>
+</section>
+<footer><a class="footer-title" href="#lab">KEEP<br><em>MOVING.</em><span>↗</span></a><div class="footer-line mono"><span>NIKE — LIQUID LAB / 2026</span><span>НЕЗАВИСИМЫЙ ДИЗАЙН-КОНЦЕПТ. НЕ МАГАЗИН NIKE.</span><button data-open-about>ОБ ЭКСПЕРИМЕНТЕ ↗</button></div></footer>
+</main>
+<dialog id="about-dialog" aria-labelledby="about-title"><button class="close-dialog" aria-label="Закрыть">×</button><span class="mono">ABOUT / 001</span><h2 id="about-title">Форма знакома.<br>Остальное —<br><em>эксперимент.</em></h2><p>Liquid Lab — независимый интерактивный концепт о Nike Air Max 90. Движение указателя открывает альтернативную поверхность, которая постепенно исчезает.</p><p>Хром, пузырьки и пена — художественные цифровые материалы, а не реальные варианты обуви. Проект не связан с Nike и не принимает заказы.</p><p class="about-source">Фотография модели: Nike. Интерактивная механика вдохновлена Nothin’.</p><button class="pill-button close-about">Продолжить эксперимент <span>↗</span></button></dialog>
+<noscript><p class="no-script">Включи JavaScript, чтобы исследовать жидкие материалы.</p></noscript>
+<script type="module" src="/scripts/gpu-check.js"></script>
+</body>
+</html>

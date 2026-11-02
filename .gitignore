@@ -1,0 +1,13 @@
+# Local backups and build artifacts that should not be published
+backup-before-liquid-update.zip
+*.zip
+
+# Python
+__pycache__/
+*.pyc
+
+# OS / editor
+Thumbs.db
+.DS_Store
+.vscode/
+.idea/
