@@ -1,4 +1,4 @@
-import { installScrollText } from './scroll-text.js?v=20261103-screens';
+import { installScrollText } from './scroll-text.js?v=20261103-wipe';
 /* NIKE / LIQUID LAB — standalone WebGL 2 fluid-reveal study.
  * No runtime dependencies. See README.md for tunable parameters and launch.
  */
@@ -51,9 +51,9 @@ document.querySelector('#auto-button').addEventListener('click', () => {
 document.querySelector('#reset-button').addEventListener('click', () => {engine?.reset();if(engine?.preview)engine.togglePreview();const b=document.querySelector('#preview-button');b.setAttribute('aria-pressed','false');b.textContent='Показать слой';});
 document.querySelectorAll('[data-preview-material]').forEach(button => button.addEventListener('click', () => {
   setMaterial(Number(button.dataset.previewMaterial));
-  hero.scrollIntoView({behavior:reducedMotion.matches?'instant':'smooth'});
+  window.scrollTo({top:0,behavior:reducedMotion.matches?'instant':'smooth'});
 }));
-document.querySelector('#return-lab').addEventListener('click', () => hero.scrollIntoView({behavior:reducedMotion.matches?'instant':'smooth'}));
+document.querySelector('#return-lab').addEventListener('click', () => window.scrollTo({top:0,behavior:reducedMotion.matches?'instant':'smooth'}));
 const about = document.querySelector('#about-dialog');
 let closingAbout=null;
 function openAbout(){

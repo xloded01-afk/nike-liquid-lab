@@ -95,3 +95,22 @@ footer.screen-track{padding:0;background:#111311}
 html[data-motion-enabled=false] .screen-track{padding-block-end:0}
 html[data-motion-enabled=false] .screen-stage{position:relative!important;transform:none!important;opacity:1!important}
 
+
+/* Opaque siblings paint in document order. The moving clip edge is the
+   actual top of the next panel, so reversing input reverses the wipe. */
+.screen-original{background:#f0f1ed}.screen-materials{background:#fff}
+html.scenes-ready[data-motion-enabled=true] .screen-track{position:sticky;top:0;overflow:clip;isolation:isolate}
+html.scenes-ready[data-motion-enabled=true] .screen-track::after{display:none}
+html.scenes-ready[data-motion-enabled=true] .screen-track>.screen-stage{position:relative;transform:translateY(var(--wipe-offset,0px));opacity:1}
+html.scenes-ready[data-motion-enabled=true] .screen-track.scene-is-tall{position:relative}
+html.scenes-ready[data-motion-enabled=true] .hero{position:sticky;top:min(0px,calc(100dvh - 700px))}
+@media(max-width:680px){html.scenes-ready[data-motion-enabled=true] .hero{top:min(0px,calc(100dvh - 800px))}}
+.scenes-ready .screen-track :is([data-scroll-media],[data-scroll-text],[data-scroll-reveal],.scroll-line){transform:none!important;transition:none!important;opacity:1!important;pointer-events:auto}
+.scenes-ready .screen-track [data-scroll-text]:not(:has(.scroll-line)),.scenes-ready .screen-track .scroll-line,.scenes-ready .screen-track [data-scroll-reveal]{opacity:var(--wipe-ink,1)!important}
+.scenes-ready .screen-track :focus-visible{opacity:1!important}
+.scenes-ready .hero :is([data-scroll-text],.scroll-line){transform:none!important;transition:none!important}
+.scenes-ready .hero [data-scroll-text]:not(:has(.scroll-line)),.scenes-ready .hero .scroll-line{opacity:var(--hero-ink,1)!important}
+.scenes-ready .hero [data-scroll-media]{opacity:1!important;transform:none!important;transition:none!important}
+
+.scenes-ready .hero :is(.header,.material-area,.explore-button,.hero-baseline){opacity:var(--hero-ink,1)}
+.liquid-surface{touch-action:pan-y pinch-zoom}

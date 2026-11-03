@@ -19,15 +19,15 @@ export function shouldFade(item,direction,y,viewport){
  return direction==='down'&&y>12&&(item.hero||item.top+item.height-y<Math.min(viewport*.08,56));
 }
 export function scrollExitClass(media){return media?'media-is-out':'text-is-out';}
-export function screenFrame(top,trackHeight,stageHeight,viewport,options={}){
- if(options.reduced||options.tall)return {stageTop:top,scale:1,opacity:1,shift:0};
- const clamp=v=>Math.max(0,Math.min(1,v));
- const ease=v=>{v=clamp(v);return v*v*(3-2*v);};
- const hold=Math.max(0,trackHeight-stageHeight);
- const stageTop=Math.min(Math.max(top,0),top+hold);
- const entry=ease(1-top/Math.max(1,viewport));
- const exit=ease(-stageTop/Math.max(1,viewport*.65));
- return {stageTop,scale:.95+.05*entry-.025*exit,opacity:.55+.45*entry-.25*exit,shift:22*(1-entry)};
+// The native flow determines the edge. Offset the artwork by the opposite
+// distance so that the moving window reveals an undistorted, still image.
+export function wipeFrame(top,nextTop,height){
+ const clamp=value=>Math.max(0,Math.min(1,value));
+ const ease=value=>{const t=clamp(value);return t*t*(3-2*t);};
+ const incoming=clamp(1-top/height);
+ const outgoing=clamp(1-nextTop/height);
+ return {offset:-Math.max(0,Math.min(top,height)),
+         ink:ease((incoming-.68)/.27)*(1-ease(outgoing/.24))};
 }
 export function motionState(item,direction,y,viewport,reduced=false,focused=false){
  if(reduced||focused)return {pending:false,exiting:false};
@@ -60,8 +60,7 @@ export function installScrollText(options={}){
   if(needsMeasure){
    const plans=scenes.map(scene=>{
     const height=scene.stage.offsetHeight,tall=height>innerHeight+4;
-    const mobile=innerWidth<=680;
-    const room=reduced||tall?0:Math.round(Math.max(mobile?44:64,Math.min(mobile?100:160,innerHeight*(mobile?.10:.14))));
+    const room=0;
     return {scene,height,tall,room};
    });
    let changed=false;
@@ -88,21 +87,17 @@ export function installScrollText(options={}){
   }
   const direction=state.update(y);
   const active=document.activeElement;
-  const frames=scenes.map(scene=>{
-   const top=scene.root.getBoundingClientRect().top;
-   return {scene,top,frame:screenFrame(top,scene.height+scene.room,scene.height,innerHeight,{reduced,tall:scene.tall})};
-  });
-  // All layout reads above; the rest of this frame only changes classes.
-  for(const {scene,top,frame} of frames){
-   scene.frame=frame;
-   const visible=!reduced&&!scene.tall&&top<innerHeight*1.2&&top+scene.height+scene.room>-innerHeight*.2;
-   scene.root.classList.toggle('scene-is-active',visible);
-   if(visible){
-    scene.stage.style.setProperty('--scene-scale',frame.scale.toFixed(5));
-    scene.stage.style.setProperty('--scene-opacity',frame.opacity.toFixed(5));
-    scene.stage.style.setProperty('--scene-shift',frame.shift.toFixed(2)+'px');
-   }
+  const tops=scenes.map(scene=>scene.root.getBoundingClientRect().top);
+  for(const [index,scene] of scenes.entries()){
+   const top=tops[index],nextTop=tops[index+1]??innerHeight;
+   const frame=wipeFrame(top,nextTop,innerHeight);
+   scene.frame={stageTop:top};
+   const enabled=!reduced&&!scene.tall;
+   scene.stage.style.setProperty('--wipe-offset',enabled?frame.offset.toFixed(2)+'px':'0px');
+   scene.root.style.setProperty('--wipe-ink',enabled?frame.ink.toFixed(4):'1');
   }
+  const heroInk=wipeFrame(0,tops[0]??innerHeight,innerHeight).ink;
+  document.documentElement.style.setProperty('--hero-ink',reduced?'1':heroInk.toFixed(4));
   for(const item of items){
    const control=item.node.closest('a,button');
    const focused=active!==document.body&&(item.node.contains(active)||control?.contains(active));
