@@ -8,7 +8,7 @@
   <title>NIKE — Liquid Lab</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23ceff00'/%3E%3Ctext x='12' y='47' font-size='44' font-weight='900' font-style='italic' font-family='Arial'%3EN%3C/text%3E%3C/svg%3E">
   <link rel="preload" as="image" href="assets/air-max.png">
-  <link rel="stylesheet" href="styles.css?v=20261103-media">
+  <link rel="stylesheet" href="styles.css?v=20261103-smooth">
 </head>
 <body>
 <a class="skip-link" href="#silhouette">Перейти к описанию</a>
@@ -28,7 +28,7 @@
   <div class="hero-instruction" data-scroll-text><svg viewBox="0 0 40 40" aria-hidden="true"><path d="m12 7 4 24 5-8 9-2Z"/><path d="M5 14c-4 12 7 24 19 20M24 5c7 2 11 7 12 13"/></svg><p id="interaction-hint">Двигай курсором без нажатия.<br><span>Почувствуй течение.</span></p></div>
 
   <div class="hero-bottom">
-    <div class="hero-copy"><h1 data-scroll-text><span class="scroll-line">Материал</span> <span class="scroll-line">в движении.</span></h1><p class="description" data-scroll-text>Двигай курсором. Открывай хром, пузырьки и розовую пену.</p></div>
+    <div class="hero-copy" data-motion-group><h1 data-scroll-text><span class="scroll-line">Материал</span> <span class="scroll-line">в движении.</span></h1><p class="description" data-scroll-text>Двигай курсором. Открывай хром, пузырьки и розовую пену.</p></div>
     <div class="material-area">
       <div class="material-topline mono"><span>Выбери поверхность</span><span id="material-counter" class="sr-only">01 / 03</span></div>
       <div class="material-dock" role="group" aria-label="Материал проявления">
@@ -48,20 +48,20 @@
 <section id="silhouette" class="silhouette-section">
 
   <div class="story-grid">
-    <div class="story-heading"><h2 data-scroll-text><span class="scroll-line">Air Max 90.</span> <span class="scroll-line">Знакомая форма.</span></h2><p data-scroll-text>Узнаваемые линии. Многослойная фактура. Видимая Air-амортизация. Здесь классический силуэт становится пространством для эксперимента.</p><a class="text-link" href="https://www.nike.com/de/t/air-max-90-schuh-exykZV6r/IX0354-100" target="_blank" rel="noopener noreferrer">Оригинальная модель на Nike.com <span>↗</span></a></div>
-    <div class="product-study" data-scroll-media><img src="assets/air-max-side.png" alt="Nike Air Max 90: белый многослойный верх, голубые вставки и видимая Air-подушка" loading="lazy"><div class="study-bottom"><span class="mono">Air Max 90 · вид сбоку</span></div></div>
+    <div class="story-heading" data-motion-group><h2 data-scroll-text><span class="scroll-line">Air Max 90.</span> <span class="scroll-line">Знакомая форма.</span></h2><p data-scroll-text>Узнаваемые линии. Многослойная фактура. Видимая Air-амортизация. Здесь классический силуэт становится пространством для эксперимента.</p><a data-scroll-reveal class="text-link" href="https://www.nike.com/de/t/air-max-90-schuh-exykZV6r/IX0354-100" target="_blank" rel="noopener noreferrer">Оригинальная модель на Nike.com <span>↗</span></a></div>
+    <div class="product-study" data-scroll-media data-motion-order="1"><img src="assets/air-max-side.png" alt="Nike Air Max 90: белый многослойный верх, голубые вставки и видимая Air-подушка" loading="lazy"><div class="study-bottom"><span class="mono">Air Max 90 · вид сбоку</span></div></div>
   </div>
-  <div class="material-story"><div><h3 data-scroll-text><span class="scroll-line">Одна форма.</span> <span class="scroll-line">Три ощущения.</span></h3></div><div class="material-description"><p data-scroll-text>Зеркальный металл, прозрачные пузырьки или мягкая розовая пена. Это цифровые интерпретации — новые поверхности знакомой формы.</p><button id="return-lab" class="text-link">Вернуться в лабораторию <span>↑</span></button></div></div>
+  <div class="material-story" data-motion-group><div><h3 data-scroll-text><span class="scroll-line">Одна форма.</span> <span class="scroll-line">Три ощущения.</span></h3></div><div class="material-description"><p data-scroll-text>Зеркальный металл, прозрачные пузырьки или мягкая розовая пена. Это цифровые интерпретации — новые поверхности знакомой формы.</p><button id="return-lab" data-scroll-reveal class="text-link">Вернуться в лабораторию <span>↑</span></button></div></div>
   <div class="material-cards">
-    <button class="material-card card-chrome" data-preview-material="0"><div class="material-image" data-scroll-media><img src="assets/wordmark-material-0.webp" alt="Логотип Nike: хром" loading="lazy" width="1500" height="497"></div><div class="card-foot" data-scroll-text><h4>Хром</h4><p>Холодный блеск.<br>Живое движение.</p></div></button>
-    <button class="material-card card-bubble" data-preview-material="1"><div class="material-image" data-scroll-media><img src="assets/wordmark-material-1.webp" alt="Логотип Nike: пузыри" loading="lazy" width="1500" height="497"></div><div class="card-foot" data-scroll-text><h4>Пузыри</h4><p>Прозрачная фактура.<br>Неожиданный объём.</p></div></button>
-    <button class="material-card card-foam" data-preview-material="2"><div class="material-image" data-scroll-media><img src="assets/wordmark-material-2.webp" alt="Логотип Nike: розовая пена" loading="lazy" width="1500" height="497"></div><div class="card-foot" data-scroll-text><h4>Розовая пена</h4><p>Мягкая поверхность.<br>Смелый характер.</p></div></button>
+    <button data-motion-group class="material-card card-chrome" data-preview-material="0"><div class="material-image" data-scroll-media><img src="assets/wordmark-material-0.webp" alt="Логотип Nike: хром" loading="lazy" width="1500" height="497"></div><div class="card-foot" data-scroll-text><h4>Хром</h4><p>Холодный блеск.<br>Живое движение.</p></div></button>
+    <button data-motion-group class="material-card card-bubble" data-preview-material="1"><div class="material-image" data-scroll-media><img src="assets/wordmark-material-1.webp" alt="Логотип Nike: пузыри" loading="lazy" width="1500" height="497"></div><div class="card-foot" data-scroll-text><h4>Пузыри</h4><p>Прозрачная фактура.<br>Неожиданный объём.</p></div></button>
+    <button data-motion-group class="material-card card-foam" data-preview-material="2"><div class="material-image" data-scroll-media><img src="assets/wordmark-material-2.webp" alt="Логотип Nike: розовая пена" loading="lazy" width="1500" height="497"></div><div class="card-foot" data-scroll-text><h4>Розовая пена</h4><p>Мягкая поверхность.<br>Смелый характер.</p></div></button>
   </div>
 </section>
-<footer><a class="footer-title" href="#lab">KEEP<br>MOVING.<span>↗</span></a><div class="footer-line mono"><span>NIKE — LIQUID LAB / 2026</span><span>НЕЗАВИСИМЫЙ ДИЗАЙН-КОНЦЕПТ. НЕ МАГАЗИН NIKE.</span><button data-open-about>Об эксперименте ↗</button></div></footer>
+<footer data-motion-group><a data-scroll-reveal class="footer-title" href="#lab">KEEP<br>MOVING.<span>↗</span></a><div data-scroll-reveal class="footer-line mono"><span>NIKE — LIQUID LAB / 2026</span><span>НЕЗАВИСИМЫЙ ДИЗАЙН-КОНЦЕПТ. НЕ МАГАЗИН NIKE.</span><button data-open-about>Об эксперименте ↗</button></div></footer>
 </main>
 <dialog id="about-dialog" aria-labelledby="about-title"><button class="close-dialog" aria-label="Закрыть">×</button><h2 id="about-title">Форма знакома.<br>Остальное — эксперимент.</h2><p>Liquid Lab — независимый интерактивный концепт о Nike Air Max 90. Движение указателя открывает альтернативную поверхность, которая постепенно исчезает.</p><p>Хром, пузырьки и пена — художественные цифровые материалы, а не реальные варианты обуви. Проект не связан с Nike и не принимает заказы.</p><p class="about-source">Фотография модели: Nike. Интерактивная механика вдохновлена Nothin’.</p><button class="pill-button close-about">Продолжить эксперимент <span>↗</span></button></dialog>
 <noscript><p class="no-script">Включи JavaScript, чтобы исследовать жидкие материалы.</p></noscript>
-<script type="module" src="app.js?v=20261103-media"></script>
+<script type="module" src="app.js?v=20261103-smooth"></script>
 </body>
 </html>

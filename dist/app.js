@@ -1,4 +1,4 @@
-import { installScrollText } from './scroll-text.js?v=20261103-media';
+import { installScrollText } from './scroll-text.js?v=20261103-smooth';
 /* NIKE / LIQUID LAB — standalone WebGL 2 fluid-reveal study.
  * No runtime dependencies. See README.md for tunable parameters and launch.
  */
@@ -55,9 +55,24 @@ document.querySelectorAll('[data-preview-material]').forEach(button => button.ad
 }));
 document.querySelector('#return-lab').addEventListener('click', () => hero.scrollIntoView({behavior:reducedMotion.matches?'instant':'smooth'}));
 const about = document.querySelector('#about-dialog');
-document.querySelectorAll('[data-open-about]').forEach(button => button.addEventListener('click', () => about.showModal()));
-document.querySelectorAll('.close-dialog,.close-about').forEach(button => button.addEventListener('click', () => about.close()));
-about.addEventListener('click', e => { if(e.target === about){ const r=about.getBoundingClientRect(); if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom) about.close(); } });
+let closingAbout=null;
+function openAbout(){
+  if(closingAbout){closingAbout.cancel();closingAbout=null;}
+  about.classList.remove('is-closing');
+  if(!about.open)about.showModal();
+}
+function closeAbout(){
+  if(!about.open||closingAbout)return;
+  if(reducedMotion.matches){about.close();return;}
+  about.classList.add('is-closing');
+  const animation=about.animate([{opacity:1,transform:'translateY(0) scale(1)'},{opacity:0,transform:'translateY(8px) scale(.99)'}],{duration:180,easing:'cubic-bezier(.4,0,.2,1)',fill:'forwards'});
+  closingAbout=animation;
+  animation.finished.then(()=>{about.close();about.classList.remove('is-closing');animation.cancel();closingAbout=null;}).catch(()=>{});
+}
+about.addEventListener('cancel',event=>{event.preventDefault();closeAbout();});
+document.querySelectorAll('[data-open-about]').forEach(button => button.addEventListener('click',openAbout));
+document.querySelectorAll('.close-dialog,.close-about').forEach(button => button.addEventListener('click',closeAbout));
+about.addEventListener('click', e => { if(e.target === about){ const r=about.getBoundingClientRect(); if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom) closeAbout(); } });
 if(coarsePointer.matches) document.querySelector('#interaction-hint').innerHTML='Проведи пальцем по логотипу.<br><span>Открой другую сторону.</span>';
 if(reducedMotion.matches) document.querySelector('#interaction-hint').textContent='Просмотри материалы кнопкой «Показать слой».';
 document.querySelector('#preview-button').addEventListener('click',e=>{const visible=engine?.togglePreview();e.currentTarget.setAttribute('aria-pressed',String(!!visible));e.currentTarget.textContent=visible?'Скрыть слой':'Показать слой';});
