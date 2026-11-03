@@ -1,3 +1,4 @@
+import { installScrollText } from './scroll-text.js';
 /* NIKE / LIQUID LAB — standalone WebGL 2 fluid-reveal study.
  * No runtime dependencies. See README.md for tunable parameters and launch.
  */
@@ -62,6 +63,8 @@ if(reducedMotion.matches) document.querySelector('#interaction-hint').textConten
 document.querySelector('#preview-button').addEventListener('click',e=>{const visible=engine?.togglePreview();e.currentTarget.setAttribute('aria-pressed',String(!!visible));e.currentTarget.textContent=visible?'Скрыть слой':'Показать слой';});
 const motionButton=document.querySelector('#motion-button');
 function syncMotion(){
+  document.documentElement.dataset.motionEnabled=String(motionEnabled);
+  document.dispatchEvent(new Event('lab-motion-change'));
   motionButton.textContent=motionEnabled?'Движение: вкл.':'Включить движение';
   motionButton.setAttribute('aria-pressed',String(motionEnabled));
   document.querySelector('#interaction-hint').textContent=motionEnabled?(coarsePointer.matches?'Проведи пальцем по логотипу.':'Двигай курсором без нажатия. Почувствуй течение.'):'Движение отключено. Можно показать весь слой.';
@@ -497,3 +500,5 @@ export const ready=boot().catch(error=>{
 });
 
 export { engine, CONFIG };
+
+installScrollText({reduced:()=>!motionEnabled});

@@ -12,7 +12,8 @@ css=(dist/'styles.css').read_text(encoding='utf8')
 css=re.sub(r"url\('(assets/[^']+)'\)",lambda m:"url('"+uri(m[1])+"')",css)
 html=html.replace('<link rel="stylesheet" href="styles.css">','<style>'+css+'</style>')
 html=re.sub(r'(src|href)="(assets/[^"]+)"',lambda m:m[1]+'="'+uri(m[2])+'"',html)
-js=(dist/'jet-input.js').read_text(encoding='utf8').replace('export class','class')+'\n'+(dist/'app.js').read_text(encoding='utf8')
+js=(dist/'scroll-text.js').read_text(encoding='utf8').replace('export class','class').replace('export function','function')+'\n'+(dist/'jet-input.js').read_text(encoding='utf8').replace('export class','class')+'\n'+(dist/'app.js').read_text(encoding='utf8')
+js=js.replace("import { installScrollText } from './scroll-text.js';",'')
 js=js.replace("import { JetInput } from './jet-input.js';",'').replace('export const ready','const ready').replace('export { engine, CONFIG };','')
 assets={file.name:uri('assets/'+file.name) for file in (dist/'assets').iterdir() if file.suffix in ['.png','.webp'] and ('wordmark' in file.name or file.name in ['air-max.png','shoe-normal.png'])}
 import json
