@@ -1,9 +1,9 @@
 import Lenis from './vendor/lenis.js';
-import { installScrollText } from './scroll-text.js?v=20261104-live-waves';
+import { installScrollText } from './scroll-text.js?v=20261104-stable-scroll';
 /* NIKE / LIQUID LAB — standalone WebGL 2 fluid-reveal study.
  * No runtime dependencies. See README.md for tunable parameters and launch.
  */
-import { JetInput, TouchTap } from './jet-input.js?v=20261104-live-waves';
+import { JetInput, TouchTap } from './jet-input.js?v=20261104-stable-scroll';
 
 const CONFIG = {
   nozzleRadius: 0.043,     // Relative to viewport height; narrows with speed.

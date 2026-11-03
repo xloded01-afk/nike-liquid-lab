@@ -1337,10 +1337,13 @@ function installScrollText(options={}){
   pending=false;
   const reduced=options.reduced?.()??preference.matches;
   if(needsMeasure){
-   html.classList.remove('scenes-ready','scenes-timeline');
    scenes.forEach(scene=>{scene.stage.style.removeProperty('clip-path');});
-   // Measure only after real layout changes, never during steady scrolling.
+   // Keep the track heights intact while measuring natural content height.
+   // Collapsing the tracks here makes the browser clamp a deep scroll position.
+   const sizing=scenes.map(({stage})=>({stage,height:stage.style.height,minHeight:stage.style.minHeight}));
+   for(const {stage} of sizing){stage.style.height='auto';stage.style.minHeight=innerHeight+'px';}
    const fits=scenes.every(scene=>scene.stage.getBoundingClientRect().height<=innerHeight+2);
+   for(const {stage,height,minHeight} of sizing){stage.style.height=height;stage.style.minHeight=minHeight;}
    enabled=!reduced&&fits&&scenes.length>0;
    html.style.setProperty('--hero-height',Math.max(innerHeight,innerWidth<=680?800:700)+'px');
    html.classList.toggle('scenes-ready',enabled);
