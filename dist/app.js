@@ -1,9 +1,9 @@
 import Lenis from './vendor/lenis.js';
-import { installScrollText } from './scroll-text.js?v=20261103-smooth-panels';
+import { installScrollText } from './scroll-text.js?v=20261104-live-waves';
 /* NIKE / LIQUID LAB — standalone WebGL 2 fluid-reveal study.
  * No runtime dependencies. See README.md for tunable parameters and launch.
  */
-import { JetInput } from './jet-input.js';
+import { JetInput, TouchTap } from './jet-input.js?v=20261104-live-waves';
 
 const CONFIG = {
   nozzleRadius: 0.043,     // Relative to viewport height; narrows with speed.
@@ -30,6 +30,7 @@ const materialNames = ['01 — LIQUID CHROME','02 — BUBBLE WRAP','03 — PINK 
 let selectedMaterial = 0;
 let autoMode = false;
 let engine;
+let heroExposed=true;
 
 function setMaterial(id) {
   selectedMaterial = id;
@@ -74,7 +75,7 @@ about.addEventListener('cancel',event=>{event.preventDefault();closeAbout();});
 document.querySelectorAll('[data-open-about]').forEach(button => button.addEventListener('click',openAbout));
 document.querySelectorAll('.close-dialog,.close-about').forEach(button => button.addEventListener('click',closeAbout));
 about.addEventListener('click', e => { if(e.target === about){ const r=about.getBoundingClientRect(); if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom) closeAbout(); } });
-if(coarsePointer.matches) document.querySelector('#interaction-hint').innerHTML='Проведи пальцем по логотипу.<br><span>Открой другую сторону.</span>';
+if(coarsePointer.matches) document.querySelector('#interaction-hint').innerHTML='Коснись логотипа.<br><span>Открой другую сторону.</span>';
 if(reducedMotion.matches) document.querySelector('#interaction-hint').textContent='Просмотри материалы кнопкой «Показать слой».';
 document.querySelector('#preview-button').addEventListener('click',e=>{const visible=engine?.togglePreview();e.currentTarget.setAttribute('aria-pressed',String(!!visible));e.currentTarget.textContent=visible?'Скрыть слой':'Показать слой';});
 const motionButton=document.querySelector('#motion-button');
@@ -83,7 +84,7 @@ function syncMotion(){
   document.dispatchEvent(new Event('lab-motion-change'));
   motionButton.textContent=motionEnabled?'Движение: вкл.':'Включить движение';
   motionButton.setAttribute('aria-pressed',String(motionEnabled));
-  document.querySelector('#interaction-hint').textContent=motionEnabled?(coarsePointer.matches?'Проведи пальцем по логотипу.':'Двигай курсором без нажатия. Почувствуй течение.'):'Движение отключено. Можно показать весь слой.';
+  document.querySelector('#interaction-hint').textContent=motionEnabled?(coarsePointer.matches?'Коснись логотипа. Открой другую сторону.':'Двигай курсором без нажатия. Почувствуй течение.'):'Движение отключено. Можно показать весь слой.';
   engine?.reset();
 }
 motionButton.addEventListener('click',()=>{motionEnabled=!motionEnabled;syncMotion();});
@@ -311,7 +312,11 @@ class FluidReveal {
     this.gl=gl; this.images=images;
     this.programs={}; this.targets=[]; this.input=new JetInput(); this.preview=false;
     this.weights=[1,0,0];this.targetWeights=[1,0,0];
-    this.visible=true;this.lastTime=0;this.lastMaterialTime=0;this.lastInput=0;
+    this.intersecting=true;this.visible=heroExposed&&!document.hidden;
+    this.pausedAt=this.visible?null:performance.now();
+    this.touchTap=new TouchTap();
+    this.lastPointer=null;
+    this.lastTime=0;this.lastMaterialTime=0;this.lastInput=0;
     this.running=false;this.time=0;
     this.positions=new Float32Array(12*4);this.jets=new Float32Array(12*4);
     const vao=gl.createVertexArray();gl.bindVertexArray(vao);
@@ -322,15 +327,26 @@ class FluidReveal {
     this.textures=images.map(img=>this.imageTexture(img));
     this.resize();
     this.resizeObserver=new ResizeObserver(()=>this.resize());this.resizeObserver.observe(hero);
-    this.intersection=new IntersectionObserver(([entry])=>{this.visible=entry.isIntersecting;if(this.visible)this.start();},{threshold:0});this.intersection.observe(hero);
-    hero.addEventListener('pointermove',e=>this.pointer(e));
-    hero.addEventListener('pointerdown',e=>{
-      if(e.pointerType==='touch'&&e.target.classList.contains('liquid-surface'))e.target.setPointerCapture(e.pointerId);
-      this.pointer(e,true);
+    this.intersection=new IntersectionObserver(([entry])=>{this.intersecting=entry.isIntersecting;this.updateVisibility();},{threshold:0});this.intersection.observe(hero);
+    hero.addEventListener('pointermove',e=>{
+      if(e.pointerType==='touch')this.touchTap.move(e,window.scrollY);
+      else this.pointer(e);
     });
-    hero.addEventListener('pointerleave',()=>{this.input.leave();});
-    hero.addEventListener('pointercancel',()=>{this.input.leave();});
-    document.addEventListener('visibilitychange',()=>{if(!document.hidden)this.start();});
+    hero.addEventListener('pointerdown',e=>{
+      if(e.pointerType!=='touch')return;
+      this.touchTap.cancel();
+      if(this.visible&&!reducedMotion.matches&&e.isPrimary&&!e.target.closest('a,button,dialog'))this.touchTap.begin(e,window.scrollY);
+    });
+    hero.addEventListener('pointerup',e=>{
+      if(e.pointerType==='touch'&&this.touchTap.end(e,window.scrollY)){
+        this.input.leave();
+        this.pointer(e,true);
+        this.input.leave();
+      }
+    });
+    hero.addEventListener('pointerleave',()=>{this.input.leave();this.lastPointer=null;this.touchTap.cancel();});
+    hero.addEventListener('pointercancel',()=>{this.input.leave();this.lastPointer=null;this.touchTap.cancel();});
+    document.addEventListener('visibilitychange',()=>this.updateVisibility());
     this.start();
   }
   createProgram(fragment) {
@@ -406,17 +422,31 @@ class FluidReveal {
     gl.drawArrays(gl.TRIANGLE_STRIP,0,4);
   }
   pointer(event,tap=false){
-    if(reducedMotion.matches)return;
-    if(event.target.closest('a,button,dialog')){this.input.leave();return;}
+    if(!this.visible||reducedMotion.matches)return;
+    if(event.target.closest('a,button,dialog')){this.input.leave();this.lastPointer=null;return;}
     if(event.pointerType==='touch'&&!tap&&event.buttons===0)return;
     const rect=hero.getBoundingClientRect();
     const samples=event.getCoalescedEvents?.();
+    let moved=false;
     for(const sample of samples?.length?samples:[event]){
+      const previous=this.lastPointer;
+      if(!tap&&previous){
+        if(previous.x===sample.clientX&&previous.y===sample.clientY)continue;
+        // Project both cursor samples through the same current rectangle.
+        // Scrolling the canvas underneath the mouse is not a nozzle stroke.
+        if(this.input.last){
+          this.input.last.x=(previous.x-rect.left)/rect.width;
+          this.input.last.y=1-(previous.y-rect.top)/rect.height;
+        }
+      }
       const x=(sample.clientX-rect.left)/rect.width,y=1-(sample.clientY-rect.top)/rect.height;
-      if(x<0||x>1||y<0||y>1){this.input.leave();continue;}
+      if(x<0||x>1||y<0||y>1){this.input.leave();this.lastPointer=null;continue;}
       const now=sample.timeStamp||performance.now();
       this.input.sample(x,y,now,this.aspect,tap);
+      if(!tap)this.lastPointer={x:sample.clientX,y:sample.clientY};
+      moved=true;
     }
+    if(!moved)return;
     this.lastInput=performance.now();
     this.start();
   }
@@ -458,17 +488,33 @@ class FluidReveal {
     if(!this.dye)return;
     this.run('display',null,{uLogoRect:this.logoRect,uShoeRect:this.shoeRect,uMaterial:this.weights,uTime:this.time,uResolution:[canvas.width,canvas.height],uReduced:reducedMotion.matches?1:0,uPreview:this.preview?1:0},{uSource:this.dye.read.texture,uLogo:this.textures[0],uLogoNormal:this.textures[1],uShoe:this.textures[2],uShoeNormal:this.textures[3]});
   }
-  start(){if(this.running)return;this.running=true;this.lastTime=performance.now();requestAnimationFrame(t=>this.frame(t));}
+  updateVisibility(){
+    const visible=this.intersecting&&heroExposed&&!document.hidden;
+    if(visible===this.visible)return;
+    const now=performance.now();
+    this.visible=visible;
+    if(!visible){
+      this.pausedAt=now;
+      this.input.leave();
+      this.lastPointer=null;
+      this.touchTap?.cancel();
+      return;
+    }
+    if(this.lastInput>0&&this.pausedAt!==null)this.lastInput+=now-this.pausedAt;
+    this.pausedAt=null;
+    this.lastTime=now;
+    this.start();
+  }
+  start(){if(this.running||!this.visible)return;this.running=true;this.lastTime=performance.now();requestAnimationFrame(t=>this.frame(t));}
   frame(now){
     if(!this.visible||document.hidden||this.gl.isContextLost()){this.running=false;return;}
-    const dt=Math.min((now-this.lastTime)/1000,.033);this.lastTime=now;this.time+=dt;
+    const dt=Math.max(0,Math.min((now-this.lastTime)/1000,.033));this.lastTime=now;this.time+=dt;
     if(autoMode&&this.time-this.lastMaterialTime>CONFIG.materialInterval)setMaterial((selectedMaterial+1)%3);
     const blend=1.-Math.exp(-dt*5./CONFIG.transitionDuration);
     for(let i=0;i<3;i++)this.weights[i]+=(this.targetWeights[i]-this.weights[i])*(reducedMotion.matches?1:blend);
     // GPU work stops after the trail has dissipated; interactions wake it instantly.
-    // Keep fluid simulation out of the scroll animation budget.
-    const active=window.scrollY<4&&(now-this.lastInput<6500||this.input.queue.length>0);
-    if(active){const steps=Math.max(1,Math.ceil(dt/(1/60)));for(let i=0;i<steps;i++)this.simulate(dt/steps);}
+    const active=now-this.lastInput<6500||this.input.queue.length>0;
+    if(active&&dt>0){const steps=Math.max(1,Math.ceil(dt/(1/60)));for(let i=0;i<steps;i++)this.simulate(dt/steps);}
     this.draw();
     if(!active&&!autoMode&&this.weights.every((v,i)=>Math.abs(v-this.targetWeights[i])<.001)){this.running=false;return;}
     requestAnimationFrame(t=>this.frame(t));
@@ -518,4 +564,7 @@ export const ready=boot().catch(error=>{
 
 export { engine, CONFIG };
 
-installScrollText({reduced:()=>!motionEnabled,SmoothScroll:Lenis});
+installScrollText({reduced:()=>!motionEnabled,SmoothScroll:Lenis,onHeroVisibility:visible=>{
+  heroExposed=visible;
+  engine?.updateVisibility?.();
+}});

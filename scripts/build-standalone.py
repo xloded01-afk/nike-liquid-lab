@@ -17,7 +17,8 @@ vendor=re.sub(r'export \{[^}]+\};?', '', vendor)
 js=vendor+'\n'+(dist/'scroll-text.js').read_text(encoding='utf8').replace('export class','class').replace('export function','function')+'\n'+(dist/'jet-input.js').read_text(encoding='utf8').replace('export class','class')+'\n'+(dist/'app.js').read_text(encoding='utf8')
 js=js.replace("import Lenis from './vendor/lenis.js';", '')
 js=re.sub(r"import \{ installScrollText \} from './scroll-text\.js(?:\?[^']*)?';",'',js)
-js=js.replace("import { JetInput } from './jet-input.js';",'').replace('export const ready','const ready').replace('export { engine, CONFIG };','')
+js=re.sub(r"import \{ JetInput, TouchTap \} from './jet-input\.js(?:\?[^']*)?';",'',js)
+js=js.replace('export const ready','const ready').replace('export { engine, CONFIG };','')
 assets={file.name:uri('assets/'+file.name) for file in (dist/'assets').iterdir() if file.suffix in ['.png','.webp'] and ('wordmark' in file.name or file.name in ['air-max.png','shoe-normal.png'])}
 import json
 js='const embeddedAssets='+json.dumps(assets)+';\n'+js

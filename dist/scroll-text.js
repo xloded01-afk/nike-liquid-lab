@@ -46,6 +46,18 @@ export function installScrollText(options={}){
  const nativeTimeline=CSS.supports('animation-timeline: view()');
  const state=new ScrollDirection(window.scrollY),seen=new WeakSet();
  let enabled=false,pending=false,needsMeasure=true,travel=0,smoother=null,items=[],initial=true;
+ let heroCoverAt=Infinity,heroVisible;
+
+ function syncHeroVisibility(){
+  const active=document.activeElement;
+  // Input modality can change :focus-visible without changing the focused node.
+  const focused=enabled&&scenes[0].root.contains(active)&&active.matches(':focus-visible');
+  const coverAt=focused?Math.min(heroCoverAt,scenes[0].top):heroCoverAt;
+  const visible=window.scrollY<coverAt;
+  if(visible===heroVisible)return;
+  heroVisible=visible;
+  options.onHeroVisibility?.(visible);
+ }
 
  function syncSmoothing(reduced){
   const smooth=enabled&&!reduced&&!coarse.matches&&options.SmoothScroll;
@@ -69,6 +81,9 @@ export function installScrollText(options={}){
    html.classList.toggle('scenes-timeline',enabled&&nativeTimeline);
    travel=innerHeight*(innerWidth<=680?1.15:1.4);
    scenes.forEach(scene=>{scene.top=scene.root.offsetTop;});
+   // Native view timelines inherit the scroll-padding at their starting edge.
+   const inset=nativeTimeline?(parseFloat(getComputedStyle(html).scrollPaddingTop)||0):0;
+   heroCoverAt=enabled?scenes[0].top+travel-inset:Infinity;
    items=nodes.map(node=>{const rect=node.getBoundingClientRect();return {node,top:rect.top+scrollY,height:rect.height,hero:!!node.closest('.hero')};});
    syncSmoothing(reduced);
    smoother?.resize();
@@ -79,6 +94,7 @@ export function installScrollText(options={}){
    initial=false;
    needsMeasure=false;
   }
+  syncHeroVisibility();
   if(enabled&&nativeTimeline)return;
   const y=window.scrollY;
   if(enabled){
@@ -103,7 +119,10 @@ export function installScrollText(options={}){
   }
  }
  function schedule(){if(!pending){pending=true;requestAnimationFrame(render);}}
- addEventListener('scroll',()=>{if(!enabled||!nativeTimeline)schedule();},{passive:true});
+ addEventListener('scroll',()=>{
+  syncHeroVisibility();
+  if(!enabled||!nativeTimeline)schedule();
+ },{passive:true});
  addEventListener('resize',measure,{passive:true});
  addEventListener('pageshow',measure);
  document.fonts?.ready.then(measure);
@@ -112,6 +131,7 @@ export function installScrollText(options={}){
  coarse.addEventListener('change',measure);
  document.addEventListener('lab-motion-change',measure);
  document.addEventListener('focusin',event=>{
+  syncHeroVisibility();
   const scene=scenes.find(scene=>scene.root.contains(event.target));
   if(enabled&&scene&&event.target.matches(':focus-visible')){
    const target=scene.top+travel;
@@ -119,6 +139,9 @@ export function installScrollText(options={}){
    else window.scrollTo({top:target,behavior:'instant'});
   }else if(!enabled)schedule();
  });
+ document.addEventListener('focusout',schedule);
+ document.addEventListener('keydown',schedule);
+ document.addEventListener('pointerdown',schedule,{passive:true});
  // Anchors land on the fully opened chapter, including the browser's Back flow.
  document.addEventListener('click',event=>{
   const link=event.target.closest('a[href="#silhouette"],a[href="#lab"]');
