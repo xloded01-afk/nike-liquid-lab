@@ -1,4 +1,4 @@
-import { installScrollText } from './scroll-text.js';
+import { installScrollText } from './scroll-text.js?v=20261103-media';
 /* NIKE / LIQUID LAB — standalone WebGL 2 fluid-reveal study.
  * No runtime dependencies. See README.md for tunable parameters and launch.
  */
