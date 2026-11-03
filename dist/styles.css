@@ -48,40 +48,37 @@ html[data-motion-enabled=false] :is(dialog,.material-image img,.product-study im
 html[data-motion-enabled=false] dialog::backdrop{animation:none!important}
 @media(prefers-reduced-motion:reduce){html:not([data-motion-enabled=true]){scroll-behavior:auto}html:not([data-motion-enabled=true]) :is([data-scroll-text],[data-scroll-media],[data-scroll-reveal],.scroll-line){opacity:1!important;transform:none!important;transition:none!important;pointer-events:auto}html:not([data-motion-enabled=true]) dialog{animation:none!important}}
 
-/* Screen-sized chapters use real document space and native sticky positioning.
-   The only scrubbed properties are transform and opacity; no wheel/touch capture. */
+/* Every panel stays still while one full-width clipping window opens.
+   Tracks overlap for the whole reveal, including its last frame. */
 .hero{height:100vh;height:100dvh;min-height:700px}
-.silhouette-section{padding:0;background:#f0f1ed}
-.screen-track{position:relative;padding:0;scroll-margin-top:-24px}
-.screen-stage{position:relative;min-height:100vh;min-height:100dvh;display:flex;align-items:center;justify-content:center;padding:clamp(40px,7vh,90px) var(--frame);transform-origin:50% 50%}
-html.scenes-ready[data-motion-enabled=true] .screen-track::after{content:"";display:block;height:var(--scene-room,0px)}
-html.scenes-ready[data-motion-enabled=true] .screen-stage{position:sticky;top:0}
-html.scenes-ready[data-motion-enabled=true] .scene-is-active>.screen-stage{opacity:var(--scene-opacity,1);transform:translate3d(0,var(--scene-shift,0px),0) scale(var(--scene-scale,1))}
-html.scenes-ready[data-motion-enabled=true] .scene-is-tall>.screen-stage{position:relative;transform:none;opacity:1}
-.screen-stage>.story-grid,.screen-stage>.material-story{width:100%;max-width:1440px;margin:0 auto}
-.screen-stage>.story-grid{align-items:center}
-.screen-stage .product-study{min-height:0;height:clamp(340px,55vh,640px);width:100%}
+.hero-track{display:contents}
+.screen-track{position:relative;padding:0;background:transparent}
+.screen-stage{position:relative;min-height:100vh;min-height:100dvh;display:flex;align-items:center;justify-content:center;padding:clamp(40px,7vh,90px) var(--frame)}
+.screen-original>.screen-stage{background:#f0f1ed}
+.screen-materials>.screen-stage{background:#fff}
+.screen-chrome>.screen-stage{background:#131513;color:#fff}
+.screen-bubble>.screen-stage{background:#dce3d5;color:#142010}
+.screen-foam>.screen-stage{background:#ebc5ce;color:#44232c}
+.screen-stage>.story-grid,.screen-stage>.material-story{width:100%;max-width:1440px;margin:0 auto;align-items:center}
+.screen-stage .product-study{min-height:0;height:clamp(300px,55vh,640px);width:100%}
 .screen-stage .product-study img{max-height:calc(100% - 70px);width:96%;object-fit:contain}
-.screen-stage>.material-story{align-items:center}
-.material-cards{display:block}
-.screen-chrome{background:#131513;color:#fff}
-.screen-bubble{background:#dce3d5;color:#142010}
-.screen-foam{background:#ebc5ce;color:#44232c}
 .screen-stage>.material-card{width:100%;max-width:1440px;min-height:65vh;margin:0 auto;padding:32px;align-items:center;background:transparent}
 .screen-stage .material-image{overflow:visible}
 .screen-stage .material-image img{max-height:56vh;object-fit:contain}
 .screen-stage .card-foot h4{font-size:clamp(36px,4.5vw,68px)}
 .screen-stage .card-foot p{font-size:18px;line-height:1.6}
-footer.screen-track{padding:0;background:#111311}
-.screen-finale>.screen-stage{flex-direction:column;align-items:stretch;justify-content:center}
+footer.screen-track{padding:0;background:transparent}
+.screen-finale>.screen-stage{background:#111311;color:#fff;flex-direction:column;align-items:stretch;justify-content:center}
 .screen-finale .footer-title{width:100%;max-width:1440px;margin:0 auto 64px}
 .screen-finale .footer-line{width:100%;max-width:1440px;margin:0 auto}
 @media(max-width:680px){
  .hero{min-height:800px}
- .screen-stage{padding:40px var(--frame);min-height:100dvh}
- .screen-stage>.story-grid{gap:30px}
- .screen-stage .product-study{height:auto;min-height:260px}
- .screen-stage .product-study img{max-height:300px;margin-block:28px 44px}
+ .screen-stage{padding:24px var(--frame);min-height:100dvh}
+ .screen-stage>.story-grid{gap:20px}
+ .screen-stage .story-heading h2{font-size:32px;margin-bottom:16px}
+ .screen-stage .story-heading>p{margin-bottom:16px}
+ .screen-stage .product-study{height:clamp(160px,30dvh,280px);min-height:0}
+ .screen-stage .product-study img{max-height:calc(100% - 40px);margin:0}
  .screen-stage>.material-story{gap:28px}
  .screen-stage>.material-card{min-height:60dvh;padding:4px;gap:32px}
  .screen-stage .material-image{padding:0}
@@ -91,26 +88,33 @@ footer.screen-track{padding:0;background:#111311}
  .screen-stage .card-foot p{font-size:16px}
  .screen-finale .footer-title{margin-bottom:48px}
 }
-@media(max-height:600px) and (min-width:681px){.screen-stage{padding-block:32px}.screen-stage .product-study{height:340px}.screen-stage>.material-card{min-height:320px}}
-html[data-motion-enabled=false] .screen-track{padding-block-end:0}
-html[data-motion-enabled=false] .screen-stage{position:relative!important;transform:none!important;opacity:1!important}
-
-
-/* Opaque siblings paint in document order. The moving clip edge is the
-   actual top of the next panel, so reversing input reverses the wipe. */
-.screen-original{background:#f0f1ed}.screen-materials{background:#fff}
-html.scenes-ready[data-motion-enabled=true] .screen-track{position:sticky;top:0;overflow:clip;isolation:isolate}
-html.scenes-ready[data-motion-enabled=true] .screen-track::after{display:none}
-html.scenes-ready[data-motion-enabled=true] .screen-track>.screen-stage{position:relative;transform:translateY(var(--wipe-offset,0px));opacity:1}
-html.scenes-ready[data-motion-enabled=true] .screen-track.scene-is-tall{position:relative}
-html.scenes-ready[data-motion-enabled=true] .hero{position:sticky;top:min(0px,calc(100dvh - 700px))}
-@media(max-width:680px){html.scenes-ready[data-motion-enabled=true] .hero{top:min(0px,calc(100dvh - 800px))}}
-.scenes-ready .screen-track :is([data-scroll-media],[data-scroll-text],[data-scroll-reveal],.scroll-line){transform:none!important;transition:none!important;opacity:1!important;pointer-events:auto}
-.scenes-ready .screen-track [data-scroll-text]:not(:has(.scroll-line)),.scenes-ready .screen-track .scroll-line,.scenes-ready .screen-track [data-scroll-reveal]{opacity:var(--wipe-ink,1)!important}
+@media(max-height:600px) and (min-width:681px){.screen-stage{padding-block:24px}.screen-stage .product-study{height:62vh}.screen-stage>.material-card{min-height:0}.screen-stage h2,.screen-stage h3{font-size:36px}}
+.scenes-ready{--scene-travel:140dvh;--scene-hold:30dvh;--scene-pin:310dvh}
+.scenes-ready .hero-track{display:block;position:relative;height:calc(var(--hero-height) + var(--scene-travel) + var(--scene-hold))}
+.scenes-ready .hero{position:sticky;top:calc(100dvh - var(--hero-height));height:var(--hero-height);min-height:0}
+.scenes-ready .screen-track{height:calc(100dvh + var(--scene-pin));margin-top:calc(-100dvh - var(--scene-travel));isolation:isolate;pointer-events:none;scroll-margin-top:calc(-1 * var(--scene-travel) - 24px);view-timeline-name:--chapter;view-timeline-axis:block}
+.scenes-ready .screen-track:last-child{height:calc(100dvh + var(--scene-travel))}
+.scenes-ready .screen-track>.screen-stage{position:sticky;top:0;height:100dvh;min-height:0;clip-path:inset(100% 0 0);contain:paint;pointer-events:auto}
+.scenes-ready :is(.screen-track,.hero) :is([data-scroll-text],[data-scroll-media],[data-scroll-reveal],.scroll-line){transition:none!important;transform:none;opacity:1;pointer-events:auto}
+.scenes-ready .screen-track [data-scroll-text]:has(.scroll-line){animation:none!important}
+.scenes-ready .screen-track :is([data-scroll-text]:not(:has(.scroll-line)),.scroll-line,[data-scroll-reveal]){opacity:var(--wipe-ink,1);transform:translate3d(0,var(--ink-shift,0px),0)}
+.scenes-ready .hero :is(.header,.hero-instruction,.hero-copy,.material-dock,.material-topline,.material-foot,.explore-button,.hero-baseline){opacity:var(--hero-ink,1)}
 .scenes-ready .screen-track :focus-visible{opacity:1!important}
-.scenes-ready .hero :is([data-scroll-text],.scroll-line){transform:none!important;transition:none!important}
-.scenes-ready .hero [data-scroll-text]:not(:has(.scroll-line)),.scenes-ready .hero .scroll-line{opacity:var(--hero-ink,1)!important}
-.scenes-ready .hero [data-scroll-media]{opacity:1!important;transform:none!important;transition:none!important}
-
-.scenes-ready .hero :is(.header,.material-area,.explore-button,.hero-baseline){opacity:var(--hero-ink,1)}
+.scenes-ready .screen-track:has(:focus-visible)>.screen-stage{clip-path:inset(0)!important}
 .liquid-surface{touch-action:pan-y pinch-zoom}
+html.lenis,html.lenis body{height:auto}
+html.lenis-smooth{scroll-behavior:auto!important}
+.lenis-smooth [data-lenis-prevent]{overscroll-behavior:contain}
+@supports(animation-timeline: view()){
+ .scenes-timeline .screen-track>.screen-stage{animation:chapter-open 1s both cubic-bezier(.65,0,.35,1);animation-timeline:--chapter;animation-range:contain 0px contain var(--scene-travel)}
+ .scenes-timeline .screen-track :is([data-scroll-text]:not(:has(.scroll-line)),.scroll-line,[data-scroll-reveal]){animation:chapter-ink 1s both linear;animation-timeline:--chapter;animation-range:contain 0px contain var(--scene-pin)}
+ .scenes-timeline .screen-track:last-child :is([data-scroll-text]:not(:has(.scroll-line)),.scroll-line,[data-scroll-reveal]){animation-name:chapter-final-ink;animation-range:contain 0px contain var(--scene-travel)}
+ .scenes-timeline .hero-track{view-timeline-name:--hero;view-timeline-axis:block}
+ .scenes-timeline .hero :is(.header,.hero-instruction,.hero-copy,.material-dock,.material-topline,.material-foot,.explore-button,.hero-baseline){animation:chapter-hero-ink 1s both linear;animation-timeline:--hero;animation-range:contain calc(var(--scene-hold) + var(--hero-height) - 100dvh) contain calc(var(--scene-hold) + var(--hero-height) - 100dvh + var(--scene-travel))}
+}
+@keyframes chapter-open{from{clip-path:inset(100% 0 0)}to{clip-path:inset(0)}}
+@keyframes chapter-ink{0%,29%{opacity:0;transform:translate3d(0,18px,0)}43%,55%{opacity:1;transform:translate3d(0,0,0)}66%,100%{opacity:0;transform:translate3d(0,-18px,0)}}
+@keyframes chapter-final-ink{0%,64%{opacity:0;transform:translate3d(0,18px,0)}95%,100%{opacity:1;transform:translate3d(0,0,0)}}
+@keyframes chapter-hero-ink{0%{opacity:1}24%,100%{opacity:0}}
+@media(max-width:680px){.scenes-ready{--scene-travel:115dvh;--scene-hold:25dvh;--scene-pin:255dvh}@keyframes chapter-ink{0%,29%{opacity:0;transform:translate3d(0,10px,0)}43%,55%{opacity:1;transform:translate3d(0,0,0)}66%,100%{opacity:0;transform:translate3d(0,-10px,0)}}}
+html[data-motion-enabled=false] :is(.screen-stage,.hero .header,.hero-instruction,.hero-copy,.material-dock,.material-topline,.material-foot,.explore-button,.hero-baseline){animation:none!important;clip-path:none!important;opacity:1!important}

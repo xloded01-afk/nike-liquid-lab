@@ -1,4 +1,5 @@
-import { installScrollText } from './scroll-text.js?v=20261103-wipe';
+import Lenis from './vendor/lenis.js';
+import { installScrollText } from './scroll-text.js?v=20261103-smooth-panels';
 /* NIKE / LIQUID LAB — standalone WebGL 2 fluid-reveal study.
  * No runtime dependencies. See README.md for tunable parameters and launch.
  */
@@ -465,7 +466,8 @@ class FluidReveal {
     const blend=1.-Math.exp(-dt*5./CONFIG.transitionDuration);
     for(let i=0;i<3;i++)this.weights[i]+=(this.targetWeights[i]-this.weights[i])*(reducedMotion.matches?1:blend);
     // GPU work stops after the trail has dissipated; interactions wake it instantly.
-    const active=now-this.lastInput<6500||this.input.queue.length>0;
+    // Keep fluid simulation out of the scroll animation budget.
+    const active=window.scrollY<4&&(now-this.lastInput<6500||this.input.queue.length>0);
     if(active){const steps=Math.max(1,Math.ceil(dt/(1/60)));for(let i=0;i<steps;i++)this.simulate(dt/steps);}
     this.draw();
     if(!active&&!autoMode&&this.weights.every((v,i)=>Math.abs(v-this.targetWeights[i])<.001)){this.running=false;return;}
@@ -516,4 +518,4 @@ export const ready=boot().catch(error=>{
 
 export { engine, CONFIG };
 
-installScrollText({reduced:()=>!motionEnabled});
+installScrollText({reduced:()=>!motionEnabled,SmoothScroll:Lenis});
