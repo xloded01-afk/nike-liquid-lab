@@ -17,19 +17,20 @@ export class ScrollDirection {
 export function shouldFade(item,direction,y,viewport){
  return direction==='down'&&y>12&&(item.hero||item.top+item.height-y<viewport*.23);
 }
+export function scrollExitClass(media){return media?'media-is-out':'text-is-out';}
 export function installScrollText(options={}){
- const nodes=[...document.querySelectorAll('[data-scroll-text]')];
+ const nodes=[...document.querySelectorAll('[data-scroll-text],[data-scroll-media]')];
  const state=new ScrollDirection(window.scrollY);
  const preference=matchMedia('(prefers-reduced-motion: reduce)');
  let items=[],pending=false,needsMeasure=true;
  function render(){
   pending=false;const y=Math.max(0,window.scrollY);
   if(needsMeasure){
-   items=nodes.map(node=>{const r=node.getBoundingClientRect();return {node,top:r.top+y,height:r.height,hero:!!node.closest('.hero')};});
+   items=nodes.map(node=>{const r=node.getBoundingClientRect();return {node,top:r.top+y,height:r.height,hero:!!node.closest('.hero'),exitClass:scrollExitClass(node.hasAttribute('data-scroll-media'))};});
    needsMeasure=false;
   }
   const direction=state.update(y);
-  for(const item of items)item.node.classList.toggle('text-is-out',!(options.reduced?.()??preference.matches)&&shouldFade(item,direction,y,innerHeight));
+  for(const item of items)item.node.classList.toggle(item.exitClass,!(options.reduced?.()??preference.matches)&&shouldFade(item,direction,y,innerHeight));
  }
  function schedule(){if(!pending){pending=true;requestAnimationFrame(render);}}
  function measure(){needsMeasure=true;schedule();}
@@ -41,6 +42,6 @@ export function installScrollText(options={}){
  preference.addEventListener('change',schedule);
  document.addEventListener('lab-motion-change',schedule);
  // Tab navigation must always expose the text around the focused control.
- document.addEventListener('focusin',()=>{for(const {node} of items)node.classList.remove('text-is-out');});
+ document.addEventListener('focusin',()=>{for(const {node,exitClass} of items)node.classList.remove(exitClass);});
  measure();
 }
