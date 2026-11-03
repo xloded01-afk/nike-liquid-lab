@@ -34,3 +34,14 @@ the browser tool; the self-contained artifact was checked through HTTP.
 
 No new external images or footage were added. Existing Nike photography and
 project font notices remain documented in README.md and the about dialog.
+
+
+ROUND 3 — fullscreen chapters
+Seen in one second: the same wordmark, followed by one centered chapter per screen.
+Idea: the familiar form passes through a sequence of screen-sized material states.
+Layout: hero=monument / original=centered split / materials=centered statement / surfaces=screen-sized studies / footer=type.
+The repeated full-screen stages are explicitly requested, replacing the previous shorter bands.
+No new assets or external animation dependencies. Native sticky and one passive RAF controller.
+Top fixes: removed padding-based sticky runway after browser verification; used a real trailing block inside each track; protected long mobile content with a natural-flow fallback; tied child reveals to the sticky stage rather than stale document positions.
+Verified visual widths: 1440, 768, 390; short mobile height 600; motion-off; 14 unit tests.
+Automated Chrome inspector remains unavailable; manual real-browser checks are the evidence.

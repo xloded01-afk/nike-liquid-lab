@@ -48,3 +48,50 @@ html[data-motion-enabled=false] :is(dialog,.material-image img,.product-study im
 html[data-motion-enabled=false] dialog::backdrop{animation:none!important}
 @media(prefers-reduced-motion:reduce){html:not([data-motion-enabled=true]){scroll-behavior:auto}html:not([data-motion-enabled=true]) :is([data-scroll-text],[data-scroll-media],[data-scroll-reveal],.scroll-line){opacity:1!important;transform:none!important;transition:none!important;pointer-events:auto}html:not([data-motion-enabled=true]) dialog{animation:none!important}}
 
+/* Screen-sized chapters use real document space and native sticky positioning.
+   The only scrubbed properties are transform and opacity; no wheel/touch capture. */
+.hero{height:100vh;height:100dvh;min-height:700px}
+.silhouette-section{padding:0;background:#f0f1ed}
+.screen-track{position:relative;padding:0;scroll-margin-top:-24px}
+.screen-stage{position:relative;min-height:100vh;min-height:100dvh;display:flex;align-items:center;justify-content:center;padding:clamp(40px,7vh,90px) var(--frame);transform-origin:50% 50%}
+html.scenes-ready[data-motion-enabled=true] .screen-track::after{content:"";display:block;height:var(--scene-room,0px)}
+html.scenes-ready[data-motion-enabled=true] .screen-stage{position:sticky;top:0}
+html.scenes-ready[data-motion-enabled=true] .scene-is-active>.screen-stage{opacity:var(--scene-opacity,1);transform:translate3d(0,var(--scene-shift,0px),0) scale(var(--scene-scale,1))}
+html.scenes-ready[data-motion-enabled=true] .scene-is-tall>.screen-stage{position:relative;transform:none;opacity:1}
+.screen-stage>.story-grid,.screen-stage>.material-story{width:100%;max-width:1440px;margin:0 auto}
+.screen-stage>.story-grid{align-items:center}
+.screen-stage .product-study{min-height:0;height:clamp(340px,55vh,640px);width:100%}
+.screen-stage .product-study img{max-height:calc(100% - 70px);width:96%;object-fit:contain}
+.screen-stage>.material-story{align-items:center}
+.material-cards{display:block}
+.screen-chrome{background:#131513;color:#fff}
+.screen-bubble{background:#dce3d5;color:#142010}
+.screen-foam{background:#ebc5ce;color:#44232c}
+.screen-stage>.material-card{width:100%;max-width:1440px;min-height:65vh;margin:0 auto;padding:32px;align-items:center;background:transparent}
+.screen-stage .material-image{overflow:visible}
+.screen-stage .material-image img{max-height:56vh;object-fit:contain}
+.screen-stage .card-foot h4{font-size:clamp(36px,4.5vw,68px)}
+.screen-stage .card-foot p{font-size:18px;line-height:1.6}
+footer.screen-track{padding:0;background:#111311}
+.screen-finale>.screen-stage{flex-direction:column;align-items:stretch;justify-content:center}
+.screen-finale .footer-title{width:100%;max-width:1440px;margin:0 auto 64px}
+.screen-finale .footer-line{width:100%;max-width:1440px;margin:0 auto}
+@media(max-width:680px){
+ .hero{min-height:800px}
+ .screen-stage{padding:40px var(--frame);min-height:100dvh}
+ .screen-stage>.story-grid{gap:30px}
+ .screen-stage .product-study{height:auto;min-height:260px}
+ .screen-stage .product-study img{max-height:300px;margin-block:28px 44px}
+ .screen-stage>.material-story{gap:28px}
+ .screen-stage>.material-card{min-height:60dvh;padding:4px;gap:32px}
+ .screen-stage .material-image{padding:0}
+ .screen-stage .material-image img{max-height:42dvh}
+ .screen-stage .card-foot{display:block}
+ .screen-stage .card-foot h4{font-size:40px;margin-bottom:20px}
+ .screen-stage .card-foot p{font-size:16px}
+ .screen-finale .footer-title{margin-bottom:48px}
+}
+@media(max-height:600px) and (min-width:681px){.screen-stage{padding-block:32px}.screen-stage .product-study{height:340px}.screen-stage>.material-card{min-height:320px}}
+html[data-motion-enabled=false] .screen-track{padding-block-end:0}
+html[data-motion-enabled=false] .screen-stage{position:relative!important;transform:none!important;opacity:1!important}
+
