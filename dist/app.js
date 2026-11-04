@@ -1,9 +1,9 @@
 import Lenis from './vendor/lenis.js';
-import { installScrollText } from './scroll-text.js?v=20261104-stable-scroll';
+import { installScrollText } from './scroll-text.js?v=20261104-touch-draw';
 /* NIKE / LIQUID LAB — standalone WebGL 2 fluid-reveal study.
  * No runtime dependencies. See README.md for tunable parameters and launch.
  */
-import { JetInput, TouchTap } from './jet-input.js?v=20261104-stable-scroll';
+import { JetInput } from './jet-input.js?v=20261104-touch-draw';
 
 const CONFIG = {
   nozzleRadius: 0.043,     // Relative to viewport height; narrows with speed.
@@ -75,7 +75,7 @@ about.addEventListener('cancel',event=>{event.preventDefault();closeAbout();});
 document.querySelectorAll('[data-open-about]').forEach(button => button.addEventListener('click',openAbout));
 document.querySelectorAll('.close-dialog,.close-about').forEach(button => button.addEventListener('click',closeAbout));
 about.addEventListener('click', e => { if(e.target === about){ const r=about.getBoundingClientRect(); if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom) closeAbout(); } });
-if(coarsePointer.matches) document.querySelector('#interaction-hint').innerHTML='Коснись логотипа.<br><span>Открой другую сторону.</span>';
+if(coarsePointer.matches) document.querySelector('#interaction-hint').innerHTML='Проведи пальцем по логотипу.<br><span>Листай за его пределами.</span>';
 if(reducedMotion.matches) document.querySelector('#interaction-hint').textContent='Просмотри материалы кнопкой «Показать слой».';
 document.querySelector('#preview-button').addEventListener('click',e=>{const visible=engine?.togglePreview();e.currentTarget.setAttribute('aria-pressed',String(!!visible));e.currentTarget.textContent=visible?'Скрыть слой':'Показать слой';});
 const motionButton=document.querySelector('#motion-button');
@@ -84,7 +84,7 @@ function syncMotion(){
   document.dispatchEvent(new Event('lab-motion-change'));
   motionButton.textContent=motionEnabled?'Движение: вкл.':'Включить движение';
   motionButton.setAttribute('aria-pressed',String(motionEnabled));
-  document.querySelector('#interaction-hint').textContent=motionEnabled?(coarsePointer.matches?'Коснись логотипа. Открой другую сторону.':'Двигай курсором без нажатия. Почувствуй течение.'):'Движение отключено. Можно показать весь слой.';
+  document.querySelector('#interaction-hint').textContent=motionEnabled?(coarsePointer.matches?'Проведи пальцем по логотипу. Листай за его пределами.':'Двигай курсором без нажатия. Почувствуй течение.'):'Движение отключено. Можно показать весь слой.';
   engine?.reset();
 }
 motionButton.addEventListener('click',()=>{motionEnabled=!motionEnabled;syncMotion();});
@@ -314,7 +314,8 @@ class FluidReveal {
     this.weights=[1,0,0];this.targetWeights=[1,0,0];
     this.intersecting=true;this.visible=heroExposed&&!document.hidden;
     this.pausedAt=this.visible?null:performance.now();
-    this.touchTap=new TouchTap();
+    this.touchId=null;
+    this.touchSurface=document.querySelector('.liquid-surface');
     this.lastPointer=null;
     this.lastTime=0;this.lastMaterialTime=0;this.lastInput=0;
     this.running=false;this.time=0;
@@ -329,23 +330,19 @@ class FluidReveal {
     this.resizeObserver=new ResizeObserver(()=>this.resize());this.resizeObserver.observe(hero);
     this.intersection=new IntersectionObserver(([entry])=>{this.intersecting=entry.isIntersecting;this.updateVisibility();},{threshold:0});this.intersection.observe(hero);
     hero.addEventListener('pointermove',e=>{
-      if(e.pointerType==='touch')this.touchTap.move(e,window.scrollY);
-      else this.pointer(e);
+      if(e.pointerType==='touch')this.touch(e);
+      else if(this.touchId===null)this.pointer(e);
     });
-    hero.addEventListener('pointerdown',e=>{
-      if(e.pointerType!=='touch')return;
-      this.touchTap.cancel();
-      if(this.visible&&!reducedMotion.matches&&e.isPrimary&&!e.target.closest('a,button,dialog'))this.touchTap.begin(e,window.scrollY);
+    hero.addEventListener('pointerdown',e=>this.touch(e));
+    hero.addEventListener('pointerup',e=>this.touch(e));
+    hero.addEventListener('pointerleave',e=>{
+      if(e.pointerType!=='touch'&&this.touchId===null)this.endTouch();
     });
-    hero.addEventListener('pointerup',e=>{
-      if(e.pointerType==='touch'&&this.touchTap.end(e,window.scrollY)){
-        this.input.leave();
-        this.pointer(e,true);
-        this.input.leave();
-      }
+    hero.addEventListener('pointercancel',e=>{
+      if(e.pointerType==='touch')this.touch(e);
+      else if(this.touchId===null)this.endTouch();
     });
-    hero.addEventListener('pointerleave',()=>{this.input.leave();this.lastPointer=null;this.touchTap.cancel();});
-    hero.addEventListener('pointercancel',()=>{this.input.leave();this.lastPointer=null;this.touchTap.cancel();});
+    hero.addEventListener('lostpointercapture',e=>{if(e.pointerId===this.touchId)this.endTouch();});
     document.addEventListener('visibilitychange',()=>this.updateVisibility());
     this.start();
   }
@@ -421,6 +418,27 @@ class FluidReveal {
     }
     gl.drawArrays(gl.TRIANGLE_STRIP,0,4);
   }
+  touch(event){
+    if(event.pointerType!=='touch')return;
+    if(event.type==='pointerdown'){
+      if(!event.isPrimary||this.touchId!==null||!this.visible||reducedMotion.matches||event.target.closest('.liquid-surface')!==this.touchSurface)return;
+      this.endTouch();
+      this.touchId=event.pointerId;
+      this.touchSurface.setPointerCapture(event.pointerId);
+      this.pointer(event,true);
+      return;
+    }
+    if(event.pointerId!==this.touchId)return;
+    if(event.type==='pointermove')this.pointer(event);
+    else this.endTouch();
+  }
+  endTouch(){
+    const id=this.touchId;
+    this.touchId=null;
+    if(id!=null&&this.touchSurface?.hasPointerCapture(id))this.touchSurface.releasePointerCapture(id);
+    this.input.leave();
+    this.lastPointer=null;
+  }
   pointer(event,tap=false){
     if(!this.visible||reducedMotion.matches)return;
     if(event.target.closest('a,button,dialog')){this.input.leave();this.lastPointer=null;return;}
@@ -453,6 +471,7 @@ class FluidReveal {
   togglePreview(){this.preview=!this.preview;this.start();return this.preview;}
   selectMaterial(id){this.targetWeights=[0,0,0];this.targetWeights[id]=1;this.lastMaterialTime=this.time;this.start();}
   reset(){
+    this.endTouch();
     const gl=this.gl;for(const t of this.targets){gl.bindFramebuffer(gl.FRAMEBUFFER,t.fbo);gl.clearColor(0,0,0,0);gl.clear(gl.COLOR_BUFFER_BIT);}
     this.input.reset();this.lastInput=0;this.draw();
   }
@@ -495,9 +514,7 @@ class FluidReveal {
     this.visible=visible;
     if(!visible){
       this.pausedAt=now;
-      this.input.leave();
-      this.lastPointer=null;
-      this.touchTap?.cancel();
+      this.endTouch();
       return;
     }
     if(this.lastInput>0&&this.pausedAt!==null)this.lastInput+=now-this.pausedAt;

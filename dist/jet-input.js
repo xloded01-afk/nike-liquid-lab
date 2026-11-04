@@ -37,22 +37,3 @@ export class JetInput {
   }
 }
 
-/** A touch emits only after release, once native pan/pinch has been ruled out. */
-export class TouchTap {
-  constructor(){this.cancel();}
-  begin(event,scrollY){
-    this.origin={id:event.pointerId,x:event.clientX,y:event.clientY,time:event.timeStamp,scrollY};
-  }
-  move(event,scrollY){
-    const origin=this.origin;
-    if(!origin||origin.id!==event.pointerId)return;
-    if(Math.hypot(event.clientX-origin.x,event.clientY-origin.y)>8||Math.abs(scrollY-origin.scrollY)>2)this.cancel();
-  }
-  end(event,scrollY){
-    this.move(event,scrollY);
-    const origin=this.origin;
-    this.cancel();
-    return !!origin&&origin.id===event.pointerId&&event.timeStamp-origin.time<=350;
-  }
-  cancel(){this.origin=null;}
-}

@@ -102,6 +102,7 @@ footer.screen-track{padding:0;background:transparent}
 .scenes-ready .screen-track :focus-visible{opacity:1!important}
 .scenes-ready .screen-track:has(:focus-visible)>.screen-stage{clip-path:inset(0)!important}
 .liquid-surface{touch-action:pan-y pinch-zoom}
+html[data-motion-enabled=true] body.webgl-ready .liquid-surface{touch-action:none}
 html.lenis,html.lenis body{height:auto}
 html.lenis-smooth{scroll-behavior:auto!important}
 .lenis-smooth [data-lenis-prevent]{overscroll-behavior:contain}
